@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🎂 Ultimate Birthday - 20th Party! 🎆</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -10,6 +10,7 @@
             overflow: hidden;
             font-family: 'Poppins', 'Segoe UI', sans-serif;
             background: #050510;
+            touch-action: pan-x pan-y; /* Biar bisa geser layar */
         }
         
         /* Floating Number Animation */
@@ -58,10 +59,10 @@
         }
         .big-number.show { opacity: 1; }
         
-        /* BONEKA BERUANG PINK DI BAWAH TULISAN HBD (ATAS LAYAR) */
+        /* BONEKA BERUANG PINK DI BAWAH TULISAN HBD */
         .cute-bear {
             position: fixed;
-            top: 120px;
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -74,22 +75,14 @@
             transition: opacity 0.5s ease;
             filter: drop-shadow(0 10px 20px rgba(255,105,180,0.4));
         }
+        .cute-bear.show { opacity: 1; }
         
-        .cute-bear.show {
-            opacity: 1;
-        }
-        
-        /* Filter buat bikin emoji beruang jadi PINK! */
         .bear-face {
             font-size: 6rem;
             filter: brightness(1.1) hue-rotate(320deg) saturate(1.5);
             animation: bearWobble 1s ease-in-out infinite;
         }
-        
-        @keyframes bearWobble {
-            0%, 100% { transform: rotate(-3deg); }
-            50% { transform: rotate(3deg); }
-        }
+        @keyframes bearWobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
         
         .bear-text {
             background: linear-gradient(135deg, #ff69b4, #ff1493);
@@ -253,6 +246,20 @@
             pointer-events: none;
         }
         
+        .balloon-instruction {
+            position: absolute;
+            bottom: 160px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #ff69b4;
+            font-size: 0.8rem;
+            z-index: 99;
+            pointer-events: none;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
         .css-firework {
             position: fixed;
             width: 6px;
@@ -275,7 +282,6 @@
         }
         @keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
         
-        /* Efek ledakan balon */
         .pop-particle {
             position: fixed;
             width: 6px;
@@ -294,15 +300,14 @@
 <body>
     <div class="click-hint" id="clickHint">🎵 KLIK DULU UNTUK AKTIFKAN SUARA! 🎵</div>
     <h1>🎂 HAPPY 20th BIRTHDAY! 🎆</h1>
-    <div class="instruction">✨ Geser layar untuk lihat kue | Klik balon untuk meletuskan! ✨</div>
+    <div class="instruction">✨ Geser layar untuk lihat kue dari berbagai sudut ✨</div>
+    <div class="balloon-instruction">🎈 Klik balon warna-warni untuk meletuskan! 🎈</div>
     
-    <!-- ANGKA 20 BESAR -->
     <div id="bigNumber20" class="big-number">20</div>
     
-    <!-- BONEKA BERUANG PINK DI BAWAH TULISAN HBD -->
     <div id="cuteBear" class="cute-bear">
         <div class="bear-face">🧸</div>
-        <div class="bear-text"> Happy Birthday ! </div>
+        <div class="bear-text">💖 Happy Birthday sayang! 💖</div>
     </div>
     
     <div class="ui">
@@ -335,7 +340,6 @@
         <button id="closeDoa" class="close-doa">💖 AMIN 💖</button>
     </div>
 
-    <!-- Audio Effects -->
     <audio id="clapSound" preload="auto" crossorigin="anonymous">
         <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_c8c8f0c6a2.mp3?filename=applause-5-185382.mp3" type="audio/mpeg">
     </audio>
@@ -356,7 +360,6 @@
         var animationInterval = null;
         var audioCtxGlobal = null;
         
-        // ========== SUARA POP ==========
         function initAudioContext() {
             if (!audioCtxGlobal) {
                 audioCtxGlobal = new (window.AudioContext || window.webkitAudioContext)();
@@ -371,7 +374,6 @@
             
             try {
                 const now = ctx.currentTime;
-                
                 const osc1 = ctx.createOscillator();
                 const gain1 = ctx.createGain();
                 osc1.connect(gain1);
@@ -409,11 +411,7 @@
                 noise.start();
                 gain3.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
                 noise.stop(now + 0.1);
-                
-                console.log("💥 POP!");
-            } catch(e) {
-                console.log("Pop sound error:", e);
-            }
+            } catch(e) { console.log("Pop sound error:", e); }
         }
         
         function createPopEffect(x, y) {
@@ -428,7 +426,6 @@
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 500);
             }
-            
             for (let i = 0; i < 25; i++) {
                 var conf = document.createElement('div');
                 conf.className = 'confetti';
@@ -440,7 +437,6 @@
                 document.body.appendChild(conf);
                 setTimeout(() => conf.remove(), 1500);
             }
-            
             playPopSound();
         }
         
@@ -497,22 +493,14 @@
         function startAllAnimations() {
             playTrumpet();
             document.getElementById('doaPanel').classList.remove('hidden');
+            document.getElementById('bigNumber20').classList.add('show');
+            document.getElementById('cuteBear').classList.add('show');
             
-            // Munculin angka 20 besar
-            var bigNumber = document.getElementById('bigNumber20');
-            bigNumber.classList.add('show');
-            
-            // Munculin BERUANG PINK DI BAWAH TULISAN HBD
-            var cuteBear = document.getElementById('cuteBear');
-            cuteBear.classList.add('show');
-            
-            // Animasi angka dan love setiap 0.8 detik
             animationInterval = setInterval(function() {
                 createFloatingNumber();
                 createRandomFloatingElement();
             }, 800);
             
-            // Konfeti periodik
             var confettiInterval = setInterval(function() {
                 if (currentSong === 2) addPeriodicConfetti();
             }, 3000);
@@ -522,12 +510,8 @@
         function stopAllAnimations() {
             if (animationInterval) { clearInterval(animationInterval); animationInterval = null; }
             if (window.confettiInterval) { clearInterval(window.confettiInterval); window.confettiInterval = null; }
-            
-            var bigNumber = document.getElementById('bigNumber20');
-            bigNumber.classList.remove('show');
-            
-            var cuteBear = document.getElementById('cuteBear');
-            cuteBear.classList.remove('show');
+            document.getElementById('bigNumber20').classList.remove('show');
+            document.getElementById('cuteBear').classList.remove('show');
         }
         
         function playTrumpet() {
@@ -562,7 +546,6 @@
                 elDiv.className = 'floating-star';
                 elDiv.innerHTML = randomEl;
             }
-            
             elDiv.style.left = (Math.random() * 90 + 5) + '%';
             if (randomEl !== '🎈') {
                 elDiv.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
@@ -632,7 +615,6 @@
     <div id="youtube-player-1" style="position: absolute; bottom: 0; left: 0; width: 0; height: 0; opacity: 0;"></div>
     <div id="youtube-player-2" style="position: absolute; bottom: 0; left: 0; width: 0; height: 0; opacity: 0;"></div>
 
-    <!-- Three.js -->
     <script type="importmap">
         {
             "imports": {
@@ -758,7 +740,7 @@
         plate.receiveShadow = true;
         scene.add(plate);
         
-        // BALON INTERAKTIF
+        // BALON INTERAKTIF - DIPERBESAR HITBOX NYA
         const balloonColors3D = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0xff9ff3, 0x54a0ff, 0xff69b4];
         const balloonPositions = [
             { angle: 0, radius: 3.2, yOffset: 0.8 }, { angle: 0.5, radius: 3.4, yOffset: 1.0 },
@@ -771,10 +753,16 @@
         
         function createClickableBalloon(pos) {
             const balloonGroup = new THREE.Group();
-            const balloonBody = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshStandardMaterial({ color: balloonColors3D[Math.floor(Math.random() * balloonColors3D.length)] }));
+            
+            // Badan balon (diperbesar sedikit)
+            const balloonBody = new THREE.Mesh(
+                new THREE.SphereGeometry(0.45, 32, 32), // Diperbesar dari 0.4 jadi 0.45
+                new THREE.MeshStandardMaterial({ color: balloonColors3D[Math.floor(Math.random() * balloonColors3D.length)], emissive: 0x442200, emissiveIntensity: 0.1 })
+            );
             balloonBody.castShadow = true;
             balloonGroup.add(balloonBody);
             
+            // Tali balon
             const stringLine = new THREE.Line(
                 new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -0.4, 0), new THREE.Vector3(0, -1.0, 0)]),
                 new THREE.LineBasicMaterial({ color: 0xffffff })
@@ -785,20 +773,24 @@
             const x = Math.cos(angleRad) * pos.radius;
             const z = Math.sin(angleRad) * pos.radius;
             balloonGroup.position.set(x, pos.yOffset, z);
+            
             scene.add(balloonGroup);
-            return { group: balloonGroup, position: { x, y: pos.yOffset, z }, radius: 0.4 };
+            
+            return { group: balloonGroup, position: { x, y: pos.yOffset, z }, radius: 0.45 };
         }
         
         const balloons3D = [];
         balloonPositions.forEach(pos => { balloons3D.push(createClickableBalloon(pos)); });
         
-        // Raycaster untuk klik balon
+        // Raycaster untuk klik balon (dioptimasi untuk touch)
         const raycasterBalloon = new THREE.Raycaster();
         const mouseBalloon = new THREE.Vector2();
         
-        window.addEventListener('click', (event) => {
-            mouseBalloon.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-            mouseBalloon.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+        // Event untuk mouse dan touch
+        function handleBalloonClick(clientX, clientY) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouseBalloon.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            mouseBalloon.y = -((clientY - rect.top) / rect.height) * 2 + 1;
             raycasterBalloon.setFromCamera(mouseBalloon, camera);
             
             const balloonMeshes = balloons3D.map(b => b.group);
@@ -832,7 +824,19 @@
                     }, 500);
                 }
             }
+        }
+        
+        // Mouse click
+        window.addEventListener('click', (event) => {
+            handleBalloonClick(event.clientX, event.clientY);
         });
+        
+        // Touch event untuk HP
+        window.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            const touch = event.touches[0];
+            handleBalloonClick(touch.clientX, touch.clientY);
+        }, { passive: false });
         
         // Bintang
         const starGeometry = new THREE.BufferGeometry();
@@ -898,13 +902,22 @@
         document.getElementById('blowBtn').addEventListener('click', blowAllCandles);
         document.getElementById('closeSurprise').addEventListener('click', () => { document.getElementById('surprisePanel').classList.add('hidden'); });
         
+        // Klik kue juga bisa tiup
         const raycasterCake = new THREE.Raycaster();
         const mouseCake = new THREE.Vector2();
-        window.addEventListener('click', (event) => {
-            mouseCake.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-            mouseCake.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+        
+        function handleCakeClick(clientX, clientY) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouseCake.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            mouseCake.y = -((clientY - rect.top) / rect.height) * 2 + 1;
             raycasterCake.setFromCamera(mouseCake, camera);
             if (raycasterCake.intersectObject(cakeGroup, true).length > 0 && !candlesBlown) blowAllCandles();
+        }
+        
+        window.addEventListener('click', (event) => { handleCakeClick(event.clientX, event.clientY); });
+        window.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            handleCakeClick(touch.clientX, touch.clientY);
         });
         
         let time = 0;
